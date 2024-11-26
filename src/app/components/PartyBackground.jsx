@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, AnimatePresence } from 'framer-motion'
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, useCallback } from 'react'
 
 const Sparkle = ({ delay, color, x, y, size, duration }) => (
   <motion.div
@@ -46,7 +46,7 @@ export default function PartyBackground() {
     '#B8860B', // Dark golden rod
   ], [])
 
-  const generateSparkle = (index, total) => ({
+  const generateSparkle = useCallback((index, total) => ({
     id: Date.now() + index,
     left: `${Math.random() * 100}%`,
     top: `${Math.random() * 100}%`,
@@ -54,7 +54,7 @@ export default function PartyBackground() {
     delay: (index / total) * 2, // Staggered delays
     duration: Math.random() * 3 + 4,
     color: colors[Math.floor(Math.random() * colors.length)]
-  })
+  }), [colors])
 
   useEffect(() => {
     const initialSparkles = Array.from({ length: 50 }, (_, i) => generateSparkle(i, 50))
@@ -76,7 +76,7 @@ export default function PartyBackground() {
 
     const interval = setInterval(regenerateSparkles, 8000)
     return () => clearInterval(interval)
-  }, [isTransitioning, colors])
+  }, [isTransitioning, generateSparkle])
 
   return (
     <div className="fixed inset-0 -z-10 bg-gray-950">

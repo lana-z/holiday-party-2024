@@ -118,7 +118,7 @@ export default function RsvpForm() {
                              checked:bg-emerald hover:bg-emerald/80 accent-emerald focus:outline-none"
                   />
                   <label htmlFor="notAttending" className="ml-2 block text-lg text-[#fdf7d7] font-playfair">
-                    Unfortunately, I can't make it 
+                    Unfortunately, I can&apos;t make it 
                   </label>
                 </div>
               </div>
