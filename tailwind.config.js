@@ -2,9 +2,20 @@
 module.exports = {
   darkMode: ["class"],
   content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/components/**/*.{js,ts,jsx,tsx,mdx}"
+  ],
+  safelist: [
+    'bg-burgundy',
+    'bg-emerald',
+    'text-[#fdf7d7]',
+    'text-[#f1f1f1]',
+    {
+      pattern: /^(bg|text|border|ring)-(burgundy|emerald|champagne|platinum|wine|sapphire)/,
+      variants: ['hover', 'focus', 'active']
+    }
   ],
   theme: {
     extend: {
@@ -50,5 +61,5 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [require("tailwindcss-animate")],
 }
