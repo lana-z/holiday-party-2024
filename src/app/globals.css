@@ -2,20 +2,86 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 60 33% 97%;    /* Pearl white */
+    --foreground: 210 16% 26%;   /* Charcoal */
+    
+    /* Rich Colors */
+    --burgundy: 345 100% 25%;    /* #800020 */
+    --champagne: 39 67% 89%;     /* #F7E7CE */
+    --platinum: 240 3% 89%;      /* #E5E4E2 */
+    
+    /* Jewel Tones */
+    --emerald: 122 93% 20%;      /* #046307 */
+    --sapphire: 225 85% 21%;     /* #082567 */
+    --wine: 340 85% 20%;         /* Deeper burgundy */
+
+    /* UI Colors */
+    --primary: var(--burgundy);
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: var(--champagne);
+    --secondary-foreground: 210 16% 26%;
+    
+    --accent: var(--wine);
+    --accent-foreground: 0 0% 100%;
+    
+    --muted: var(--platinum);
+    --muted-foreground: 210 16% 26%;
+    
+    --border: var(--burgundy);
+    --ring: var(--burgundy);
+    
+    --radius: 0.5rem;
+  }
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+.light {
+  box-shadow: 0 0 10px 5px rgba(128, 0, 32, 0.3),     /* Burgundy glow */
+              0 0 30px 15px rgba(247, 231, 206, 0.2);  /* Champagne glow */
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Luxury Gradients */
+.gradient-burgundy {
+  background: linear-gradient(135deg, #800020 0%, #4A0012 50%, #800020 100%);
+}
+
+.gradient-jewel {
+  background: linear-gradient(135deg, #800020 0%, #046307 50%, #082567 100%);
 }
