@@ -10,8 +10,13 @@ export default function Footer() {
           src="/images/greenery.png"
           alt="Holiday Greenery"
           fill
+          sizes="100vw"
+          quality={75}
+          loading="lazy"
           className="object-cover"
-          priority
+          style={{
+            objectFit: 'cover',
+          }}
         />
       </div>
     </footer>
