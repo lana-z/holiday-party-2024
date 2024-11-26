@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { getGuest } from '@/lib/db'
 
 // Hardcoded guest list for testing
 const GUEST_LIST = {
@@ -17,15 +18,15 @@ export async function POST(request) {
   try {
     const { password } = await request.json()
     console.log('API: Received password:', password)
-    console.log('API: Guest list:', GUEST_LIST)
     console.log('API: Password type:', typeof password)
-    console.log('API: Available passwords:', Object.keys(GUEST_LIST))
 
-    if (password in GUEST_LIST) {
-      console.log('API: Match found! Guest name:', GUEST_LIST[password])
+    const guestName = await getGuest(password)
+    
+    if (guestName) {
+      console.log('API: Match found! Guest name:', guestName)
       return NextResponse.json({
         success: true,
-        guestName: GUEST_LIST[password]
+        guestName
       }, { headers })
     }
 
