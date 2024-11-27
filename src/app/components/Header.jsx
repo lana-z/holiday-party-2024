@@ -10,8 +10,14 @@ export default function Header() {
           src="/images/christmas-lights-4string.png"
           alt="Christmas Lights"
           fill
-          className="object-cover w-full"
+          sizes="100vw"
+          quality={75}
           priority
+          loading="eager"
+          className="object-cover w-full"
+          style={{
+            objectFit: 'cover',
+          }}
         />
       </div>
       <div className="relative w-full -mt-12 sm:-mt-16 md:-mt-20 lg:-mt-24">
