@@ -79,11 +79,12 @@ export default function PartyBackground() {
   }, [isTransitioning, colors])
 
   return (
-    <div className="fixed inset-0 -z-10 bg-gray-950">
+    <div className="fixed inset-0 -z-10 bg-gray-950" style={{ willChange: 'transform' }}>
       <div 
         className="absolute inset-0" 
         style={{ 
-          background: 'linear-gradient(145deg, rgb(31, 41, 55), rgb(17, 24, 39))'
+          background: 'linear-gradient(145deg, rgb(31, 41, 55), rgb(17, 24, 39))',
+          willChange: 'transform'
         }}
       />
       

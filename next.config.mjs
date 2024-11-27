@@ -1,11 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    images: {
-        domains: [],
-    },
-    env: {
-        GUEST_LIST: process.env.GUEST_LIST,
-    },
+  output: 'standalone',
+  reactStrictMode: true,
+  swcMinify: true,
+  images: {
+    domains: [],
+  },
+  env: {
+    GUEST_LIST: process.env.GUEST_LIST,
+    PARTY_ADDRESS: process.env.PARTY_ADDRESS,
+  },
 };
 
 export default nextConfig;
