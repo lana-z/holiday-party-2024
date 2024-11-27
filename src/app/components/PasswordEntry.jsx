@@ -98,9 +98,7 @@ export default function PasswordEntry({ onSuccess }) {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            autoComplete="new-password"
             disabled={isLoading}
-            autoComplete="new-password"
             className="mt-1 block w-full rounded-md border-dark-border bg-dark-input text-[#f1f1f1] shadow-sm 
                      focus:ring-1 focus:ring-platinum focus:border-platinum focus:outline-none
                      placeholder-dark-placeholder disabled:opacity-50 disabled:cursor-not-allowed"

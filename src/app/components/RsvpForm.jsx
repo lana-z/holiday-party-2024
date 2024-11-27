@@ -118,7 +118,7 @@ export default function RsvpForm() {
                              checked:bg-emerald hover:bg-emerald/80 accent-emerald focus:outline-none"
                   />
                   <label htmlFor="notAttending" className="ml-2 block text-lg text-[#fdf7d7] font-playfair">
-                    Unfortunately, I can't make it 
+                    Unfortunately, I can&apos;t make it 
                   </label>
                 </div>
               </div>
@@ -134,7 +134,7 @@ export default function RsvpForm() {
                              checked:bg-emerald hover:bg-emerald/80 accent-emerald focus:outline-none"
                   />
                   <label htmlFor="plusOne" className="ml-2 block text-lg text-[#fdf7d7] font-playfair">
-                    I'm bringing a plus one
+                    I&apos;m bringing a plus one
                   </label>
                 </div>
               )}
@@ -153,7 +153,7 @@ export default function RsvpForm() {
                     className="mt-1 block w-full rounded-md border-gray-600 bg-gray-800 text-[#f1f1f1] shadow-sm 
                              focus:ring-1 focus:ring-emerald focus:border-emerald focus:outline-none
                              placeholder-gray-400"
-                    placeholder="Your guest's name"
+                    placeholder="Your guest&apos;s name"
                   />
                 </div>
               )}

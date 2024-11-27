@@ -64,7 +64,7 @@ export default function PartyBackground() {
     if (sparkles.length === 0) {
       setSparkles(generateSparkles(50))
     }
-  }, [generateSparkles])
+  }, [generateSparkles, sparkles.length])
 
   useEffect(() => {
     if (isTransitioning) return
