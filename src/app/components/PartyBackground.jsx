@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, AnimatePresence } from 'framer-motion'
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 
 const Sparkle = ({ delay, color, x, y, size, duration }) => (
   <motion.div
@@ -46,7 +46,7 @@ export default function PartyBackground() {
     '#B8860B', // Dark golden rod
   ], [])
 
-  const generateSparkle = (index, total) => ({
+  const generateSparkle = useCallback((index, total) => ({
     id: Date.now() + index,
     left: `${Math.random() * 100}%`,
     top: `${Math.random() * 100}%`,
@@ -54,29 +54,33 @@ export default function PartyBackground() {
     delay: (index / total) * 2, // Staggered delays
     duration: Math.random() * 3 + 4,
     color: colors[Math.floor(Math.random() * colors.length)]
-  })
+  }), [colors])
+
+  const generateSparkles = useCallback((count) => {
+    return Array.from({ length: count }, (_, i) => generateSparkle(i, count))
+  }, [generateSparkle])
 
   useEffect(() => {
-    const initialSparkles = Array.from({ length: 50 }, (_, i) => generateSparkle(i, 50))
-    setSparkles(initialSparkles)
+    if (sparkles.length === 0) {
+      setSparkles(generateSparkles(50))
+    }
+  }, [generateSparkles, sparkles.length])
+
+  useEffect(() => {
+    if (isTransitioning) return
 
     const regenerateSparkles = () => {
-      if (isTransitioning) return
       setIsTransitioning(true)
       
-      // Generate new sparkles with staggered delays
-      const newSparkles = Array.from({ length: 50 }, (_, i) => generateSparkle(i, 50))
-      
-      // Crossfade between old and new sparkles
       setTimeout(() => {
-        setSparkles(newSparkles)
+        setSparkles(generateSparkles(50))
         setIsTransitioning(false)
-      }, 1000) // Match exit animation duration
+      }, 1000)
     }
 
     const interval = setInterval(regenerateSparkles, 8000)
     return () => clearInterval(interval)
-  }, [isTransitioning, colors])
+  }, [isTransitioning, generateSparkles])
 
   return (
     <div className="fixed inset-0 -z-10 bg-gray-950" style={{ willChange: 'transform' }}>
@@ -88,7 +92,6 @@ export default function PartyBackground() {
         }}
       />
       
-      {/* Sparkles */}
       <AnimatePresence mode="sync">
         {sparkles.map((sparkle) => (
           <Sparkle

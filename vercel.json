@@ -2,10 +2,6 @@
   "version": 2,
   "buildCommand": "next build",
   "devCommand": "next dev",
-  "installCommand": "npm install",
-  "framework": "nextjs",
-  "env": {
-    "GUEST_LIST": "@guest_list",
-    "PARTY_ADDRESS": "@party_address"
-  }
+  "installCommand": "npm install --legacy-peer-deps",
+  "framework": "nextjs"
 }
