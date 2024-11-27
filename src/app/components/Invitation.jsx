@@ -1,8 +1,18 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { useState, useEffect } from 'react'
 
 export default function Invitation() {
+  const [partyAddress, setPartyAddress] = useState('')
+
+  useEffect(() => {
+    const storedAddress = localStorage.getItem('partyAddress')
+    if (storedAddress) {
+      setPartyAddress(storedAddress)
+    }
+  }, [])
+
   return (
     <section className="relative flex justify-center">
       <motion.div
@@ -20,7 +30,9 @@ export default function Invitation() {
             December 21st, 2024
           </h2>
           <p className="pt-2 text-xl sm:text-2xl text-[#fdf7d7]">6:00 - 10:00 PM</p>
-          <p className="pt-2 text-xl sm:text-2xl text-[#fdf7d7]">{process.env.NEXT_PUBLIC_PARTY_ADDRESS}</p>
+          {partyAddress && (
+            <p className="pt-2 text-xl sm:text-2xl text-[#fdf7d7]">{partyAddress}</p>
+          )}
         </div>
         
         <motion.div
