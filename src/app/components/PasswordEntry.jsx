@@ -90,8 +90,8 @@ export default function PasswordEntry({ onSuccess }) {
             Enter the last 4 digits of your phone number
           </label>
           <input
-            type="password"
             id="password"
+            type="password"
             inputMode="numeric"
             pattern="\d{4}"
             maxLength={4}
@@ -100,6 +100,7 @@ export default function PasswordEntry({ onSuccess }) {
             required
             autoComplete="new-password"
             disabled={isLoading}
+            autoComplete="new-password"
             className="mt-1 block w-full rounded-md border-dark-border bg-dark-input text-[#f1f1f1] shadow-sm 
                      focus:ring-1 focus:ring-platinum focus:border-platinum focus:outline-none
                      placeholder-dark-placeholder disabled:opacity-50 disabled:cursor-not-allowed"
