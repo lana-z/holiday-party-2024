@@ -27,7 +27,7 @@ export default function GuestChat({ guestResponses }) {
                 </h3>
               </div>
               {response.note && (
-                <p className="text-[#f1f1f1] mt-2">"{response.note}"</p>
+                <p className="text-[#f1f1f1] mt-2">&quot;{response.note.replace(/"/g, '&quot;')}&quot;</p>
               )}
             </div>
           ))}
