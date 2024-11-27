@@ -21,16 +21,21 @@ export default function RsvpForm() {
     if (guestName) {
       setName(guestName)
     }
-    
-    // Load existing responses from localStorage
-    const savedResponses = localStorage.getItem('guestResponses')
-    if (savedResponses) {
-      setGuestResponses(JSON.parse(savedResponses))
-      setHasSubmitted(true)
-    }
   }, [])
 
-  const handleSubmit = (e) => {
+  const fetchRSVPs = async () => {
+    try {
+      const res = await fetch('/api/rsvp')
+      if (!res.ok) throw new Error('Failed to fetch RSVPs')
+      const data = await res.json()
+      setGuestResponses(Object.values(data))
+    } catch (error) {
+      console.error('Error fetching RSVPs:', error)
+      toast.error('Failed to load RSVPs')
+    }
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (isAttending === null) {
       toast.error('Please indicate if you will be attending')
@@ -42,20 +47,55 @@ export default function RsvpForm() {
       isAttending,
       hasPlusOne,
       plusOneName: hasPlusOne ? plusOneName : '',
+      dietaryRestrictions,
       note: note.trim(),
       timestamp: new Date().toISOString()
     }
 
-    const updatedResponses = [...guestResponses, newResponse]
-    setGuestResponses(updatedResponses)
-    localStorage.setItem('guestResponses', JSON.stringify(updatedResponses))
-    
-    setHasSubmitted(true)
-    setIsFormVisible(false)
-    toast.success(isAttending ? 'Wonderful! See you at the party!' : 'We will miss you, but thanks for letting us know!')
+    try {
+      console.log('Submitting RSVP:', newResponse)
+      
+      const response = await fetch('/api/rsvp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newResponse),
+      })
+
+      // Log the raw response for debugging
+      const responseText = await response.text()
+      console.log('Raw response:', responseText)
+
+      let data
+      try {
+        data = JSON.parse(responseText)
+      } catch (e) {
+        console.error('Failed to parse response as JSON:', responseText)
+        throw new Error('Server returned invalid response')
+      }
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to save your RSVP')
+      }
+
+      toast.success('Thank you for your RSVP!')
+      setHasSubmitted(true)
+      setIsFormVisible(false)
+      
+      // Update guest responses with the data from the POST response
+      if (data.data) {
+        setGuestResponses(Object.values(data.data))
+      }
+      
+    } catch (error) {
+      console.error('Error submitting RSVP:', error)
+      toast.error(error.message || 'Failed to save your RSVP')
+    }
   }
 
-  if (hasSubmitted && !isFormVisible) {
+  // Show GuestChat if the user has submitted their RSVP
+  if (hasSubmitted) {
     return <GuestChat guestResponses={guestResponses} />
   }
 
