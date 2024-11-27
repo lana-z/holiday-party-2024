@@ -18,7 +18,7 @@ export default function Header() {
         <h1 className="text-4xl font-bold sm:text-6xl md:text-7xl font-great-vibes text-center text-burgundy tracking-wide animate-fade-in">
           Swanky Cocktail Party
         </h1>
-        <p className="text-center  font-bold mt-4 text-emerald font-playfair text-md sm:text-base md:text-lg tracking-widest uppercase">
+        <p className="text-center font-bold mt-4 text-emerald font-playfair text-md sm:text-base md:text-lg tracking-widest uppercase">
           A Night of Holiday Cheer
         </p>
       </div>

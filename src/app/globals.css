@@ -17,6 +17,12 @@
     --sapphire: 225 85% 21%;     /* #082567 */
     --wine: 340 85% 20%;         /* Deeper burgundy */
 
+    /* Dark Theme Colors */
+    --dark-bg: 220 17% 10%;      /* Matches gray-900 */
+    --dark-input: 220 17% 20%;   /* Matches gray-800 */
+    --dark-border: 220 13% 40%;  /* Matches gray-600 */
+    --dark-placeholder: 220 9% 60%; /* Matches gray-400 */
+
     /* UI Colors */
     --primary: var(--burgundy);
     --primary-foreground: 0 0% 100%;

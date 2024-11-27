@@ -5,6 +5,17 @@ module.exports = {
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/components/**/*.{js,ts,jsx,tsx,mdx}"
+  ],
+  safelist: [
+    'bg-burgundy',
+    'bg-emerald',
+    'text-[#fdf7d7]',
+    'text-[#f1f1f1]',
+    {
+      pattern: /^(bg|text|border|ring)-(burgundy|emerald|champagne|platinum|wine|sapphire|dark)/,
+      variants: ['hover', 'focus', 'active']
+    }
   ],
   theme: {
     extend: {
@@ -44,6 +55,14 @@ module.exports = {
         },
         border: 'hsl(var(--border))',
         ring: 'hsl(var(--ring))',
+        
+        // Dark Theme Colors
+        dark: {
+          bg: 'hsl(var(--dark-bg))',
+          input: 'hsl(var(--dark-input))',
+          border: 'hsl(var(--dark-border))',
+          placeholder: 'hsl(var(--dark-placeholder))'
+        }
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
