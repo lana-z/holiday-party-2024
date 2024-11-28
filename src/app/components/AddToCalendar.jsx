@@ -2,24 +2,24 @@ import { FaCalendarPlus } from 'react-icons/fa'
 
 export default function AddToCalendar() {
   const eventDetails = {
-    text: "Holiday Cocktail Party",
-    dates: "20231221T190000/20231222T000000",
-    details: "Join us for a festive evening of pintxos-style bites, wines, and craft cocktails. Dress to impress!",
+    text: "Swanky Holiday Party 2024",
+    dates: "20241221T180000/20241221T220000", // Dec 21, 2024, 6:00 PM - 10:00 PM
+    details: "Wear your favorite party outfit for an evening of pintxos-style bites, wines, craft cocktails, and warm vibes.",
   }
 
   const googleCalendarUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventDetails.text)}&dates=${eventDetails.dates}&details=${encodeURIComponent(eventDetails.details)}`
 
   return (
-    (<div className="text-center">
+    <div className="text-center mb-8">
       <a
         href={googleCalendarUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-black bg-gold hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold">
+        className="inline-flex items-center px-4 py-2 rounded-md text-[#fdf7d7] bg-burgundy hover:bg-burgundy/90 transition-colors duration-200 font-playfair"
+      >
         <FaCalendarPlus className="mr-2" />
         Add to Calendar
       </a>
-    </div>)
-  );
+    </div>
+  )
 }
-
