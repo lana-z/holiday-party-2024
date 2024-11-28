@@ -41,7 +41,7 @@ export default function Invitation() {
           transition={{ delay: 0.3, duration: 0.8 }}
           className="relative prose prose-invert mx-auto mt-24">
           <p className="text-lg sm:text-lg leading-relaxed text-[#f1f1f1] max-w-prose">
-            Dust off your favorite party outfit for this evening of pintxos-style bites, wines, craft cocktails, and warm vibes. Join us to relax, connect, and celebrate the season together&nbsp;in&nbsp;style.
+            Dust off your favorite party outfit for this evening of pintxos-style bites, wines, craft cocktails, and warm vibes. Join us to connect and celebrate the season together&nbsp;in&nbsp;style.
           </p>
         </motion.div>
       </motion.div>

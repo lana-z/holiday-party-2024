@@ -100,7 +100,7 @@ export default function RsvpForm() {
   }
 
   return (
-    <div className="max-w-md mx-auto">
+    <div className="max-w-md mx-auto px-4 sm:px-0">
       <button
         onClick={() => setIsFormVisible(!isFormVisible)}
         className={`w-full text-2xl text-[#fdf7d7] font-playfair font-bold text-center transition-colors duration-200 flex items-center justify-center gap-2 rounded-lg p-2 ${!isFormVisible ? 'bg-burgundy/50' : ''}`}

@@ -106,7 +106,7 @@ export default function PasswordEntry({ onSuccess }) {
           />
         </div>
         {guestName && (
-          <div className="text-md text-[#f1f1f1] mb-4">
+          <div className="text-md text-[#f1f1f1]">
             Welcome, {guestName}!
           </div>
         )}
@@ -115,7 +115,7 @@ export default function PasswordEntry({ onSuccess }) {
           disabled={isLoading}
           className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-md font-medium 
                    text-[#fdf7d7] font-playfair focus:outline-none focus:ring-1 
-                   focus:ring-emerald focus:border-[f1f1f1] focus:ring-offset-0 transition-colors duration-200
+                   focus:border-[f1f1f1] focus:ring-offset-0 transition-colors duration-200
                    disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? 'Checking...' : 'Enter Party'}
