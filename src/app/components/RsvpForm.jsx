@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { toast } from 'react-hot-toast'
 import { motion, AnimatePresence } from 'framer-motion'
 import GuestChat from './GuestChat'
+import AddToCalendar from './AddToCalendar'
 
 export default function RsvpForm() {
   const [name, setName] = useState('')
@@ -119,6 +120,7 @@ export default function RsvpForm() {
   if ((hasAlreadyRSVPd || hasSubmitted) && !isUpdating) {
     return (
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <AddToCalendar />
         <GuestChat 
           guestResponses={guestResponses} 
           currentGuest={name}
@@ -132,7 +134,7 @@ export default function RsvpForm() {
     <div className="max-w-md mx-auto px-4 sm:px-0">
       <button
         onClick={() => setIsFormVisible(!isFormVisible)}
-        className={`w-full text-2xl text-[#fdf7d7] font-playfair font-bold text-center transition-colors duration-200 flex items-center justify-center gap-2 rounded-lg p-2 ${!isFormVisible ? 'bg-burgundy/50' : ''}`}
+        className={`w-full text-2xl text-[#fdf7d7] font-playfair font-bold text-center transition-colors duration-200 flex items-center justify-center gap-2 rounded-lg p-2 ${!isFormVisible ? 'bg-burgundy hover:bg-burgundy/90' : ''}`}
       >
         RSVP
       </button>
@@ -261,7 +263,7 @@ export default function RsvpForm() {
               
               <button
                 type="submit"
-                className="w-full text-2xl text-[#fdf7d7] font-playfair font-bold text-center transition-colors duration-200 flex items-center justify-center gap-2 bg-burgundy/50 rounded-lg p-2"
+                className="w-full text-2xl text-[#fdf7d7] font-playfair font-bold text-center transition-colors duration-200 flex items-center justify-center gap-2 bg-burgundy hover:bg-burgundy/90 rounded-lg p-2"
               >
                 Send RSVP
               </button>
