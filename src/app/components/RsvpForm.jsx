@@ -14,11 +14,20 @@ export default function RsvpForm() {
   const [isAttending, setIsAttending] = useState(null)
   const [isFormVisible, setIsFormVisible] = useState(false)
   const [hasSubmitted, setHasSubmitted] = useState(false)
+  const [hasAlreadyRSVPd, setHasAlreadyRSVPd] = useState(false)
   const [guestResponses, setGuestResponses] = useState([])
+  const [isUpdating, setIsUpdating] = useState(false)
 
   useEffect(() => {
+    // Check if user has already RSVP'd
+    const hasRSVPd = localStorage.getItem('hasRSVPd') === 'true'
     const guestName = localStorage.getItem('guestName')
-    if (guestName) {
+    
+    if (hasRSVPd && guestName) {
+      setHasAlreadyRSVPd(true)
+      setName(guestName)
+      fetchRSVPs() // Load guest messages immediately
+    } else if (guestName) {
       setName(guestName)
     }
   }, [])
@@ -79,9 +88,14 @@ export default function RsvpForm() {
         throw new Error(data.error || 'Failed to save your RSVP')
       }
 
+      // Store RSVP status in localStorage
+      localStorage.setItem('guestName', name)
+      localStorage.setItem('hasRSVPd', 'true')
+      
       toast.success('Thank you for your RSVP!')
       setHasSubmitted(true)
       setIsFormVisible(false)
+      setHasAlreadyRSVPd(true)
       
       // Update guest responses with the data from the POST response
       if (data.data) {
@@ -94,13 +108,28 @@ export default function RsvpForm() {
     }
   }
 
-  // Show GuestChat if the user has submitted their RSVP
-  if (hasSubmitted) {
-    return <GuestChat guestResponses={guestResponses} />
+  // Function to handle starting the update process
+  const handleStartUpdate = () => {
+    setIsUpdating(true)
+    setHasAlreadyRSVPd(false)
+    setIsFormVisible(true)
+  }
+
+  // Show GuestChat if the user has already RSVP'd or just submitted
+  if ((hasAlreadyRSVPd || hasSubmitted) && !isUpdating) {
+    return (
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <GuestChat 
+          guestResponses={guestResponses} 
+          currentGuest={name}
+          onUpdateRSVP={handleStartUpdate} 
+        />
+      </div>
+    )
   }
 
   return (
-    <div className="max-w-md mx-auto">
+    <div className="max-w-md mx-auto px-4 sm:px-0">
       <button
         onClick={() => setIsFormVisible(!isFormVisible)}
         className={`w-full text-2xl text-[#fdf7d7] font-playfair font-bold text-center transition-colors duration-200 flex items-center justify-center gap-2 rounded-lg p-2 ${!isFormVisible ? 'bg-burgundy/50' : ''}`}
