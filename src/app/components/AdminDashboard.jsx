@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { toast } from 'react-hot-toast'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Trash2, RefreshCw, LogOut } from 'lucide-react'
@@ -10,7 +10,7 @@ export default function AdminDashboard({ adminToken, onLogout }) {
   const [loading, setLoading] = useState(true)
   const [selectedRsvp, setSelectedRsvp] = useState(null)
 
-  const fetchRsvps = async () => {
+  const fetchRsvps = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/manage-rsvps', {
         headers: {
@@ -27,11 +27,11 @@ export default function AdminDashboard({ adminToken, onLogout }) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [adminToken])
 
   useEffect(() => {
     fetchRsvps()
-  }, [adminToken])
+  }, [fetchRsvps])
 
   const handleDelete = async (guestId) => {
     if (!confirm('Are you sure you want to delete this RSVP?')) return
@@ -136,7 +136,7 @@ export default function AdminDashboard({ adminToken, onLogout }) {
                 <p>Dietary: {rsvp.dietaryRestrictions}</p>
               )}
               {rsvp.note && (
-                <p className="italic">"{rsvp.note}"</p>
+                <p className="italic">&quot;{rsvp.note}&quot;</p>
               )}
               <p className="text-sm text-gray-400">
                 Submitted: {new Date(rsvp.timestamp).toLocaleString()}
