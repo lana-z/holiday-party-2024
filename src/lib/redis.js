@@ -12,91 +12,62 @@ Object.entries(requiredEnvVars).forEach(([name, value]) => {
 })
 
 // Initialize Redis client
-const redis = createClient({
+const redisClient = createClient({
   url: process.env.REDIS_URL
 })
 
-redis.on('error', err => console.error('Redis Client Error', err))
+redisClient.on('error', err => console.error('Redis Client Error', err))
 
 // Connect to Redis
-redis.connect().catch(console.error)
+redisClient.connect().catch(console.error)
+
+// Export the redis client
+export const redis = redisClient
 
 // Helper functions for RSVP operations
-export async function saveRSVP(guestId, rsvpData) {
+async function saveRSVP(guestId, rsvpData) {
   try {
     if (!guestId || !rsvpData) {
-      throw new Error('Missing guestId or rsvpData')
+      throw new Error('Missing required parameters')
     }
-
-    if (!redis.isOpen) {
-      await redis.connect()
-    }
-
-    const key = `rsvp:${guestId}`
-    const data = JSON.stringify({
-      ...rsvpData,
-      timestamp: new Date().toISOString()
-    })
-
-    const result = await redis.set(key, data)
-    if (!result) {
-      throw new Error('Failed to save to database')
-    }
-
+    await redis.set(`rsvp:${guestId}`, JSON.stringify(rsvpData))
     return true
   } catch (error) {
-    console.error('Redis saveRSVP error:', error)
-    throw new Error(error.message || 'Database operation failed')
+    console.error('Error saving RSVP:', error)
+    throw error
   }
 }
 
-export async function getRSVP(guestId) {
+async function getRSVP(guestId) {
   try {
-    if (!guestId) {
-      throw new Error('Missing guestId')
-    }
-
-    if (!redis.isOpen) {
-      await redis.connect()
-    }
-
-    const key = `rsvp:${guestId}`
-    const data = await redis.get(key)
-    return data ? JSON.parse(data) : null
+    const rsvp = await redis.get(`rsvp:${guestId}`)
+    return rsvp ? JSON.parse(rsvp) : null
   } catch (error) {
-    console.error('Redis getRSVP error:', error)
-    throw new Error(error.message || 'Database operation failed')
+    console.error('Error getting RSVP:', error)
+    throw error
   }
 }
 
-export async function getAllRSVPs() {
+async function getAllRSVPs() {
   try {
-    if (!redis.isOpen) {
-      await redis.connect()
-    }
-
     const keys = await redis.keys('rsvp:*')
-    if (!keys || !keys.length) return {}
+    if (!keys.length) return []
 
-    const pipeline = redis.multi()
-    keys.forEach(key => pipeline.get(key))
-    const results = await pipeline.exec()
-
-    const rsvps = {}
-    results.forEach((result, index) => {
-      try {
-        const guestId = keys[index].replace('rsvp:', '')
-        if (result) {
-          rsvps[guestId] = JSON.parse(result)
+    const rsvps = await Promise.all(
+      keys.map(async (key) => {
+        const rsvp = await redis.get(key)
+        return {
+          guestId: key.replace('rsvp:', ''),
+          ...JSON.parse(rsvp)
         }
-      } catch (e) {
-        console.error(`Error parsing RSVP data for ${keys[index]}:`, e)
-      }
-    })
-
+      })
+    )
     return rsvps
   } catch (error) {
-    console.error('Redis getAllRSVPs error:', error)
-    throw new Error(error.message || 'Database operation failed')
+    console.error('Error getting all RSVPs:', error)
+    throw error
   }
 }
+
+// Export helper functions
+export { saveRSVP, getRSVP, getAllRSVPs }
