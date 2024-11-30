@@ -110,16 +110,17 @@ export default function PasswordEntry({ onSuccess }) {
             Welcome, {guestName}!
           </div>
         )}
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-md font-medium 
-                   text-[#fdf7d7] font-playfair focus:outline-none focus:ring-1 
-                   focus:border-[f1f1f1] focus:ring-offset-0 transition-colors duration-200
-                   disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isLoading ? 'Checking...' : 'Enter Party'}
-        </button>
+        <div className="flex justify-center">
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="px-4 py-2 border border-transparent rounded-md shadow-sm text-md font-medium 
+                     text-[#fdf7d7] font-playfair bg-dark-bg/80 hover:bg-dark-bg/70 focus:outline-none 
+                     disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? 'Checking...' : 'Enter Party'}
+          </button>
+        </div>
       </form>
     </div>
   )
