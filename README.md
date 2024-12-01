@@ -1,41 +1,67 @@
-# Holiday Party 2024
+# Holiday Party 2024 
 
-Festive web application is built with Next.js to add some flare to our holiday party.
+A festive web application built with Next.js for our holiday celebration. Visit [swankyholidayparty.xyz](https://swankyholidayparty.xyz) to view the invitation (guest access required).
 
-## Author
-Lana Zumbrunn
+## Features
 
-## 🚀 Getting Started
+- Beautiful, responsive party invitation
+- Secure guest authentication
+- Add to Google Calendar functionality
+- Mobile-friendly design
+- Custom domain with SSL encryption
+
+## Security
+
+- Guest-only access system
+- Environment variable configuration
+- Secure API endpoints
+- No sensitive data exposed in client-side code
+
+## Tech Stack
+
+- [Next.js](https://nextjs.org) - React framework
+- [Tailwind CSS](https://tailwindcss.com) - Styling
+- [Framer Motion](https://www.framer.com/motion/) - Animations
+- [Vercel](https://vercel.com) - Hosting platform
+
+## Development
 
 To run the development server locally:
 
 ```bash
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.template .env.local
+# Edit .env.local with required values
+
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Then open [http://localhost:3000](http://localhost:3000) in your browser ✨
+Then open [http://localhost:3000](http://localhost:3000) in your browser 
 
-## 💻 Development
+## Environment Variables
 
-This project uses:
-- [Next.js](https://nextjs.org) as the React framework
-- React patterns and best practices
+Required environment variables (see `.env.template`):
+- `GUEST_LIST` - JSON string of guest information
+- `PARTY_ADDRESS` - Party location details
 
-## 📚 Resources
+## Deployment
 
-Need help? Check out these resources:
+The site is deployed on Vercel with custom domain configuration:
+- Automatic HTTPS/SSL
+- Edge network for fast global access
+- Continuous deployment from main branch
+
+## Author
+Lana Zumbrunn
+
+## Resources
+
 - [Next.js Documentation](https://nextjs.org/docs)
-- [Next.js Learning Guide](https://nextjs.org/learn)
-- [Next.js GitHub Repository](https://github.com/vercel/next.js)
+- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
+- [Framer Motion Documentation](https://www.framer.com/motion/)
 
-## 🚀 Deployment
-
-Coming soon...
-
-Happy Holidays! 🎄
+Happy Holidays! 
