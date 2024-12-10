@@ -7,15 +7,24 @@ export default function PasswordEntry({ onSuccess }) {
   const [password, setPassword] = useState('')
   const [guestName, setGuestName] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
+
     const storedGuestName = localStorage.getItem('guestName')
     if (storedGuestName) {
       setGuestName(storedGuestName)
     }
-  }, [])
+  }, [mounted])
 
   useEffect(() => {
+    if (!mounted) return
+
     const verifyGuest = async () => {
       if (password.length === 4) {
         setIsLoading(true)
@@ -31,6 +40,9 @@ export default function PasswordEntry({ onSuccess }) {
             setGuestName(data.guestName)
             localStorage.setItem('guestName', data.guestName)
             localStorage.setItem('partyAddress', data.partyAddress)
+            localStorage.setItem('guestCode', password)
+            localStorage.setItem('authenticated', 'true')
+            onSuccess(password)
           } else {
             setGuestName('')
           }
@@ -45,7 +57,7 @@ export default function PasswordEntry({ onSuccess }) {
     }
 
     verifyGuest()
-  }, [password])
+  }, [password, onSuccess, mounted])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -68,7 +80,8 @@ export default function PasswordEntry({ onSuccess }) {
         localStorage.setItem('authenticated', 'true')
         localStorage.setItem('guestName', data.guestName)
         localStorage.setItem('partyAddress', data.partyAddress)
-        onSuccess()
+        localStorage.setItem('guestCode', password)
+        onSuccess(password)
       } else {
         toast.error(data.message || 'Invalid password. Please try again.')
       }

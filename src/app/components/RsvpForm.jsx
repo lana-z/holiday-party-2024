@@ -5,6 +5,7 @@ import { toast } from 'react-hot-toast'
 import { motion, AnimatePresence } from 'framer-motion'
 import GuestChat from './GuestChat'
 import AddToCalendar from './AddToCalendar'
+import PasswordEntry from './PasswordEntry'
 
 export default function RsvpForm() {
   const [name, setName] = useState('')
@@ -18,20 +19,54 @@ export default function RsvpForm() {
   const [hasAlreadyRSVPd, setHasAlreadyRSVPd] = useState(false)
   const [guestResponses, setGuestResponses] = useState([])
   const [isUpdating, setIsUpdating] = useState(false)
+  const [guestCode, setGuestCode] = useState('')
 
   useEffect(() => {
-    // Check if user has already RSVP'd
+    // Check if user has already RSVP'd and get their code
     const hasRSVPd = localStorage.getItem('hasRSVPd') === 'true'
     const guestName = localStorage.getItem('guestName')
+    const storedGuestCode = localStorage.getItem('guestCode')
+    const isAuthenticated = localStorage.getItem('authenticated') === 'true'
     
-    if (hasRSVPd && guestName) {
-      setHasAlreadyRSVPd(true)
-      setName(guestName)
-      fetchRSVPs() // Load guest messages immediately
-    } else if (guestName) {
-      setName(guestName)
+    if (storedGuestCode && isAuthenticated) {
+      setGuestCode(storedGuestCode)
+      if (hasRSVPd && guestName) {
+        setHasAlreadyRSVPd(true)
+        setName(guestName)
+        fetchRSVPs()
+        
+        // Check if guest has an existing RSVP
+        fetchExistingRSVP(storedGuestCode)
+      } else if (guestName) {
+        setName(guestName)
+      }
     }
   }, [])
+
+  const fetchExistingRSVP = async (code) => {
+    try {
+      const response = await fetch(`/api/rsvp?guestCode=${code}`)
+      if (!response.ok) {
+        if (response.status !== 404) {
+          throw new Error('Error fetching RSVP')
+        }
+        return
+      }
+      
+      const existingRSVP = await response.json()
+      if (existingRSVP) {
+        // Pre-fill form with existing RSVP data
+        setIsAttending(existingRSVP.isAttending)
+        setHasPlusOne(existingRSVP.hasPlusOne || false)
+        setPlusOneName(existingRSVP.plusOneName || '')
+        setDietaryRestrictions(existingRSVP.dietaryRestrictions || '')
+        setNote(existingRSVP.note || '')
+        setIsUpdating(true)
+      }
+    } catch (error) {
+      console.error('Error fetching existing RSVP:', error)
+    }
+  }
 
   const fetchRSVPs = async () => {
     try {
@@ -59,12 +94,11 @@ export default function RsvpForm() {
       plusOneName: hasPlusOne ? plusOneName : '',
       dietaryRestrictions,
       note: note.trim(),
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      guestCode
     }
 
     try {
-      console.log('Submitting RSVP:', newResponse)
-      
       const response = await fetch('/api/rsvp', {
         method: 'POST',
         headers: {
@@ -73,20 +107,10 @@ export default function RsvpForm() {
         body: JSON.stringify(newResponse),
       })
 
-      // Log the raw response for debugging
-      const responseText = await response.text()
-      console.log('Raw response:', responseText)
-
-      let data
-      try {
-        data = JSON.parse(responseText)
-      } catch (e) {
-        console.error('Failed to parse response as JSON:', responseText)
-        throw new Error('Server returned invalid response')
-      }
+      const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to save your RSVP')
+        throw new Error(data.error || 'Failed to save RSVP')
       }
 
       // Store RSVP status in localStorage
@@ -103,10 +127,9 @@ export default function RsvpForm() {
       if (data.data) {
         setGuestResponses(Object.values(data.data))
       }
-      
     } catch (error) {
       console.error('Error submitting RSVP:', error)
-      toast.error(error.message || 'Failed to save your RSVP')
+      toast.error(error.message)
     }
   }
 
@@ -132,21 +155,31 @@ export default function RsvpForm() {
   }
 
   return (
-    <div className="max-w-md mx-auto px-4 sm:px-0">
-      <button
-        onClick={() => setIsFormVisible(!isFormVisible)}
-        className={`w-full text-2xl text-[#fdf7d7] font-playfair font-bold text-center transition-colors duration-200 flex items-center justify-center gap-2 rounded-lg p-2 ${!isFormVisible ? 'bg-burgundy hover:bg-burgundy/90' : ''}`}
-      >
-        RSVP
-      </button>
-
+    <div className="w-full max-w-2xl mx-auto px-4 py-8">
       <AnimatePresence>
-        {isFormVisible && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
+        {!guestCode ? (
+          <PasswordEntry onSuccess={(code) => {
+            setGuestCode(code)
+            fetchExistingRSVP(code)
+          }} />
+        ) : !isFormVisible ? (
+          <motion.button
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
+            onClick={() => setIsFormVisible(true)}
+            className="w-full text-2xl text-[#fdf7d7] font-playfair font-bold text-center transition-colors duration-200 flex items-center justify-center gap-2 bg-burgundy hover:bg-burgundy/90 rounded-lg p-4"
+          >
+            RSVP
+          </motion.button>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="backdrop-blur-sm rounded-lg p-8"
           >
             <form onSubmit={handleSubmit} className="mt-8 space-y-6">
               <div>
@@ -265,8 +298,10 @@ export default function RsvpForm() {
               <button
                 type="submit"
                 className="w-full text-2xl text-[#fdf7d7] font-playfair font-bold text-center transition-colors duration-200 flex items-center justify-center gap-2 bg-burgundy hover:bg-burgundy/90 rounded-lg p-2"
+                disabled={!isAttending || !name}
+                onClick={handleSubmit}
               >
-                Send RSVP
+                {isUpdating ? "Update RSVP" : "Send RSVP"}
               </button>
             </form>
           </motion.div>
