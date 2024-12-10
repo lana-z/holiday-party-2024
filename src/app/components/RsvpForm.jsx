@@ -97,6 +97,7 @@ export default function RsvpForm() {
       setHasSubmitted(true)
       setIsFormVisible(false)
       setHasAlreadyRSVPd(true)
+      setIsUpdating(false)
       
       // Update guest responses with the data from the POST response
       if (data.data) {
