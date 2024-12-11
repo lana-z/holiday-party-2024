@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { saveRSVP, getAllRSVPs } from '@/lib/redis'
+import { saveRSVP, getAllRSVPs, getRSVP } from '@/lib/redis'
 
 export async function POST(request) {
   try {
@@ -30,8 +30,15 @@ export async function POST(request) {
     }
 
     try {
-      const guestId = rsvpData.name.toLowerCase().replace(/\s+/g, '-')
-      await saveRSVP(guestId, rsvpData)
+      if (!rsvpData.guestCode) {
+        return NextResponse.json(
+          { error: 'Guest code is required' },
+          { status: 400 }
+        )
+      }
+
+      // Use the guest code as the unique identifier
+      await saveRSVP(rsvpData.guestCode, rsvpData)
       
       // Fetch all RSVPs including the one just saved
       const allRSVPs = await getAllRSVPs()
@@ -57,8 +64,24 @@ export async function POST(request) {
   }
 }
 
-export async function GET() {
+export async function GET(request) {
   try {
+    // Check if a specific guest code is requested
+    const { searchParams } = new URL(request.url)
+    const guestCode = searchParams.get('guestCode')
+
+    if (guestCode) {
+      const rsvp = await getRSVP(guestCode)
+      if (!rsvp) {
+        return NextResponse.json(
+          { error: 'RSVP not found' },
+          { status: 404 }
+        )
+      }
+      return NextResponse.json(rsvp)
+    }
+
+    // If no guest code provided, return all RSVPs (for admin/chat purposes)
     const rsvps = await getAllRSVPs()
     return NextResponse.json(rsvps)
   } catch (error) {

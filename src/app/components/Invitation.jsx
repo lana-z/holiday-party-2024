@@ -5,13 +5,25 @@ import { useState, useEffect } from 'react'
 
 export default function Invitation() {
   const [partyAddress, setPartyAddress] = useState('')
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
+
     const storedAddress = localStorage.getItem('partyAddress')
     if (storedAddress) {
       setPartyAddress(storedAddress)
     }
-  }, [])
+  }, [mounted])
+
+  // Show loading state or nothing while client-side code is hydrating
+  if (!mounted) {
+    return null
+  }
 
   return (
     <section className="relative flex justify-center">
