@@ -5,7 +5,6 @@ import { toast } from 'react-hot-toast'
 import { motion, AnimatePresence } from 'framer-motion'
 import GuestChat from './GuestChat'
 import AddToCalendar from './AddToCalendar'
-import PasswordEntry from './PasswordEntry'
 
 export default function RsvpForm() {
   const [name, setName] = useState('')
@@ -19,54 +18,28 @@ export default function RsvpForm() {
   const [hasAlreadyRSVPd, setHasAlreadyRSVPd] = useState(false)
   const [guestResponses, setGuestResponses] = useState([])
   const [isUpdating, setIsUpdating] = useState(false)
-  const [guestCode, setGuestCode] = useState('')
 
   useEffect(() => {
-    // Check if user has already RSVP'd and get their code
+    // Check if user has already RSVP'd
     const hasRSVPd = localStorage.getItem('hasRSVPd') === 'true'
     const guestName = localStorage.getItem('guestName')
-    const storedGuestCode = localStorage.getItem('guestCode')
-    const isAuthenticated = localStorage.getItem('authenticated') === 'true'
+    const guestCode = localStorage.getItem('guestCode')
     
-    if (storedGuestCode && isAuthenticated) {
-      setGuestCode(storedGuestCode)
-      if (hasRSVPd && guestName) {
-        setHasAlreadyRSVPd(true)
-        setName(guestName)
-        fetchRSVPs()
-        
-        // Check if guest has an existing RSVP
-        fetchExistingRSVP(storedGuestCode)
-      } else if (guestName) {
-        setName(guestName)
-      }
+    console.log('RsvpForm mount - localStorage state:', {
+      hasRSVPd,
+      guestName,
+      guestCode,
+      authenticated: localStorage.getItem('authenticated')
+    })
+    
+    if (hasRSVPd && guestName) {
+      setHasAlreadyRSVPd(true)
+      setName(guestName)
+      fetchRSVPs() // Load guest messages immediately
+    } else if (guestName) {
+      setName(guestName)
     }
   }, [])
-
-  const fetchExistingRSVP = async (code) => {
-    try {
-      const response = await fetch(`/api/rsvp?guestCode=${code}`)
-      if (!response.ok) {
-        if (response.status !== 404) {
-          throw new Error('Error fetching RSVP')
-        }
-        return
-      }
-      
-      const existingRSVP = await response.json()
-      if (existingRSVP) {
-        // Pre-fill form with existing RSVP data
-        setIsAttending(existingRSVP.isAttending)
-        setHasPlusOne(existingRSVP.hasPlusOne || false)
-        setPlusOneName(existingRSVP.plusOneName || '')
-        setDietaryRestrictions(existingRSVP.dietaryRestrictions || '')
-        setNote(existingRSVP.note || '')
-        setIsUpdating(true)
-      }
-    } catch (error) {
-      console.error('Error fetching existing RSVP:', error)
-    }
-  }
 
   const fetchRSVPs = async () => {
     try {
@@ -81,9 +54,22 @@ export default function RsvpForm() {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    if (e) e.preventDefault()
     if (isAttending === null) {
       toast.error('Please indicate if you will be attending')
+      return
+    }
+
+    const guestCode = localStorage.getItem('guestCode')
+    console.log('handleSubmit - guestCode:', guestCode)
+    
+    if (!guestCode) {
+      console.log('handleSubmit - localStorage state:', {
+        hasRSVPd: localStorage.getItem('hasRSVPd'),
+        guestName: localStorage.getItem('guestName'),
+        authenticated: localStorage.getItem('authenticated')
+      })
+      toast.error('Authentication required. Please refresh the page.')
       return
     }
 
@@ -93,7 +79,7 @@ export default function RsvpForm() {
       hasPlusOne,
       plusOneName: hasPlusOne ? plusOneName : '',
       dietaryRestrictions,
-      note: note.trim(),
+      note: !isAttending && !note.trim() ? "Unfortunately I can't make it" : note.trim(),
       timestamp: new Date().toISOString(),
       guestCode
     }
@@ -155,154 +141,145 @@ export default function RsvpForm() {
   }
 
   return (
-    <div className="w-full max-w-2xl mx-auto px-4 py-8">
+    <div className="max-w-md mx-auto px-4 sm:px-0">
+      <button
+        onClick={() => setIsFormVisible(!isFormVisible)}
+        className={`w-full text-2xl text-[#fdf7d7] font-playfair font-bold text-center transition-colors duration-200 flex items-center justify-center gap-2 rounded-lg p-2 ${!isFormVisible ? 'bg-burgundy hover:bg-burgundy/90' : ''}`}
+      >
+        RSVP
+      </button>
+
       <AnimatePresence>
-        {!guestCode ? (
-          <PasswordEntry onSuccess={(code) => {
-            setGuestCode(code)
-            fetchExistingRSVP(code)
-          }} />
-        ) : !isFormVisible ? (
-          <motion.button
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            onClick={() => setIsFormVisible(true)}
-            className="w-full text-2xl text-[#fdf7d7] font-playfair font-bold text-center transition-colors duration-200 flex items-center justify-center gap-2 bg-burgundy hover:bg-burgundy/90 rounded-lg p-4"
-          >
-            RSVP
-          </motion.button>
-        ) : (
+        {isFormVisible && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="backdrop-blur-sm rounded-lg p-8"
           >
-            <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-              <div>
-                <label htmlFor="name" className="block text-lg text-[#fdf7d7] font-playfair">
-                  Name
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  className="mt-1 block w-full rounded-md border-gray-600 bg-gray-800 text-[#f1f1f1] shadow-sm 
-                           focus:ring-1 focus:ring-emerald focus:border-emerald focus:outline-none
-                           placeholder-gray-400"
-                />
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex items-center">
-                  <input
-                    type="radio"
-                    id="attending"
-                    checked={isAttending === true}
-                    onChange={() => setIsAttending(true)}
-                    className="h-4 w-4 text-emerald focus:ring-emerald focus:ring-offset-0 border-gray-300
-                             checked:bg-emerald hover:bg-emerald/80 accent-emerald focus:outline-none"
-                  />
-                  <label htmlFor="attending" className="ml-2 block text-lg text-[#fdf7d7] font-playfair">
-                    Count me in 
-                  </label>
-                </div>
-
-                <div className="flex items-center">
-                  <input
-                    type="radio"
-                    id="notAttending"
-                    checked={isAttending === false}
-                    onChange={() => setIsAttending(false)}
-                    className="h-4 w-4 text-emerald focus:ring-emerald focus:ring-offset-0 border-gray-300
-                             checked:bg-emerald hover:bg-emerald/80 accent-emerald focus:outline-none"
-                  />
-                  <label htmlFor="notAttending" className="ml-2 block text-lg text-[#fdf7d7] font-playfair">
-                    Unfortunately, I can&apos;t make it 
-                  </label>
-                </div>
-              </div>
-
-              {isAttending && (
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="plusOne"
-                    checked={hasPlusOne}
-                    onChange={(e) => setHasPlusOne(e.target.checked)}
-                    className="h-4 w-4 text-emerald focus:ring-emerald focus:ring-offset-0 border-gray-300 rounded
-                             checked:bg-emerald hover:bg-emerald/80 accent-emerald focus:outline-none"
-                  />
-                  <label htmlFor="plusOne" className="ml-2 block text-lg text-[#fdf7d7] font-playfair">
-                    I&apos;m bringing a plus one
-                  </label>
-                </div>
-              )}
-
-              {hasPlusOne && isAttending && (
+            <form onSubmit={handleSubmit}>
+              <div className="mt-8 space-y-6">
                 <div>
-                  <label htmlFor="plusOneName" className="block text-lg text-[#fdf7d7] font-playfair">
+                  <label htmlFor="name" className="block text-lg text-[#fdf7d7] font-playfair">
                     Name
                   </label>
                   <input
                     type="text"
-                    id="plusOneName"
-                    value={plusOneName}
-                    onChange={(e) => setPlusOneName(e.target.value)}
+                    id="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     required
                     className="mt-1 block w-full rounded-md border-gray-600 bg-gray-800 text-[#f1f1f1] shadow-sm 
                              focus:ring-1 focus:ring-emerald focus:border-emerald focus:outline-none
                              placeholder-gray-400"
-                    placeholder="Your guest&apos;s name"
                   />
                 </div>
-              )}
 
-              <div>
-                <label htmlFor="dietaryRestrictions" className="block text-lg text-[#fdf7d7] font-playfair">
-                  Dietary Restrictions
-                </label>
-                <textarea
-                  id="dietaryRestrictions"
-                  value={dietaryRestrictions}
-                  onChange={(e) => setDietaryRestrictions(e.target.value)}
-                  rows="3"
-                  className="mt-1 block w-full rounded-md border-gray-600 bg-gray-800 text-[#f1f1f1] shadow-sm 
-                           focus:ring-1 focus:ring-emerald focus:border-emerald focus:outline-none
-                           placeholder-gray-400"
-                  placeholder="Remind us!"
-                />
-              </div>
+                <div className="space-y-4">
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                      id="attending"
+                      checked={isAttending === true}
+                      onChange={() => setIsAttending(true)}
+                      className="h-4 w-4 text-emerald focus:ring-emerald focus:ring-offset-0 border-gray-300
+                               checked:bg-emerald hover:bg-emerald/80 accent-emerald focus:outline-none"
+                    />
+                    <label htmlFor="attending" className="ml-2 block text-lg text-[#fdf7d7] font-playfair">
+                      Count me in 
+                    </label>
+                  </div>
 
-              <div>
-                <label htmlFor="note" className="block text-lg text-[#fdf7d7] font-playfair">
-                  Note
-                </label>
-                <textarea
-                  id="note"
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  rows="3"
-                  className="mt-1 block w-full rounded-md border-gray-600 bg-gray-800 text-[#f1f1f1] shadow-sm 
-                           focus:ring-1 focus:ring-emerald focus:border-emerald focus:outline-none
-                           placeholder-gray-400"
-                  placeholder="This note will be visible to party guests"
-                />
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                      id="notAttending"
+                      checked={isAttending === false}
+                      onChange={() => setIsAttending(false)}
+                      className="h-4 w-4 text-emerald focus:ring-emerald focus:ring-offset-0 border-gray-300
+                               checked:bg-emerald hover:bg-emerald/80 accent-emerald focus:outline-none"
+                    />
+                    <label htmlFor="notAttending" className="ml-2 block text-lg text-[#fdf7d7] font-playfair">
+                      Unfortunately, I can&apos;t make it 
+                    </label>
+                  </div>
+                </div>
+
+                {isAttending && (
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="plusOne"
+                      checked={hasPlusOne}
+                      onChange={(e) => setHasPlusOne(e.target.checked)}
+                      className="h-4 w-4 text-emerald focus:ring-emerald focus:ring-offset-0 border-gray-300 rounded
+                               checked:bg-emerald hover:bg-emerald/80 accent-emerald focus:outline-none"
+                    />
+                    <label htmlFor="plusOne" className="ml-2 block text-lg text-[#fdf7d7] font-playfair">
+                      I&apos;m bringing a plus one
+                    </label>
+                  </div>
+                )}
+
+                {hasPlusOne && isAttending && (
+                  <div>
+                    <label htmlFor="plusOneName" className="block text-lg text-[#fdf7d7] font-playfair">
+                      Name
+                    </label>
+                    <input
+                      type="text"
+                      id="plusOneName"
+                      value={plusOneName}
+                      onChange={(e) => setPlusOneName(e.target.value)}
+                      required
+                      className="mt-1 block w-full rounded-md border-gray-600 bg-gray-800 text-[#f1f1f1] shadow-sm 
+                               focus:ring-1 focus:ring-emerald focus:border-emerald focus:outline-none
+                               placeholder-gray-400"
+                      placeholder="Your guest&apos;s name"
+                    />
+                  </div>
+                )}
+
+                <div>
+                  <label htmlFor="dietaryRestrictions" className="block text-lg text-[#fdf7d7] font-playfair">
+                    Dietary Restrictions
+                  </label>
+                  <textarea
+                    id="dietaryRestrictions"
+                    value={dietaryRestrictions}
+                    onChange={(e) => setDietaryRestrictions(e.target.value)}
+                    rows="3"
+                    className="mt-1 block w-full rounded-md border-gray-600 bg-gray-800 text-[#f1f1f1] shadow-sm 
+                             focus:ring-1 focus:ring-emerald focus:border-emerald focus:outline-none
+                             placeholder-gray-400"
+                    placeholder="Remind us!"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="note" className="block text-lg text-[#fdf7d7] font-playfair">
+                    Note
+                  </label>
+                  <textarea
+                    id="note"
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    rows="3"
+                    className="mt-1 block w-full rounded-md border-gray-600 bg-gray-800 text-[#f1f1f1] shadow-sm 
+                             focus:ring-1 focus:ring-emerald focus:border-emerald focus:outline-none
+                             placeholder-gray-400"
+                    placeholder="This note will be visible to party guests"
+                  />
+                </div>
+                
+                <button
+                  type="submit"
+                  className="w-full text-2xl text-[#fdf7d7] font-playfair font-bold text-center transition-colors duration-200 flex items-center justify-center gap-2 bg-burgundy hover:bg-burgundy/90 rounded-lg p-2"
+                  disabled={!name || isAttending === null}
+                >
+                  {isUpdating ? "Update RSVP" : "Send RSVP"}
+                </button>
               </div>
-              
-              <button
-                type="submit"
-                className="w-full text-2xl text-[#fdf7d7] font-playfair font-bold text-center transition-colors duration-200 flex items-center justify-center gap-2 bg-burgundy hover:bg-burgundy/90 rounded-lg p-2"
-                disabled={!isAttending || !name}
-                onClick={handleSubmit}
-              >
-                {isUpdating ? "Update RSVP" : "Send RSVP"}
-              </button>
             </form>
           </motion.div>
         )}
