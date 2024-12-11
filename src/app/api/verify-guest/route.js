@@ -13,12 +13,8 @@ export async function POST(request) {
 
   try {
     const { password } = await request.json()
-    console.log('API: Received password:', password)
-    console.log('API: Password type:', typeof password)
-    console.log('API: Available passwords:', Object.keys(GUEST_LIST))
 
     if (password in GUEST_LIST) {
-      console.log('API: Match found! Guest name:', GUEST_LIST[password])
       return NextResponse.json({
         success: true,
         guestName: GUEST_LIST[password],

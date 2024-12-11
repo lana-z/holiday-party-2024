@@ -1,10 +1,10 @@
 # Holiday Party 2024
 
 A festive web app built with Next.js to add some flare to a holiday party.
-My party, deployed with guest access, lives at [swankycocktailparty.xyz](https://swankycocktailparty.xyz) 
 
-Fork and customize this repo for your own party.
-And feel free to contribute improvements via pull requests.
+Fork and customize this repo for your own party. And feel free to contribute improvements via pull requests.
+
+My party, deployed with guest access, lives at [swankycocktailparty.xyz](https://swankycocktailparty.xyz). 
 
 ### Author
 [Lana Z](https://www.linkedin.com/in/lanazumbrunn/)
@@ -29,20 +29,28 @@ And feel free to contribute improvements via pull requests.
 
 - RSVP system with plus-one option and dietary restrictions
 - Guest chat/message board with real-time updates
-- Responsive party invitation
+- Responsive party invitation for mobile browsers
 - Add to Google Calendar functionality
 - Custom domain
 - Guest-only access system with authentication via 4-digit code
 - Real-time Redis database integration
 - Admin panel for managing RSVPs
+- CORS protection via Vercel/Next.js API routes
+- Basic rate limiting and DDoS protection via Vercel
+- Built-in CSRF protection for Next.js form submissions
 - Environment variable configuration
 - No sensitive data exposed in client-side code
-- Secure API endpoints
+
+### Security considerations:
+This application is designed for casual event RSVP management and is not intended for handling highly sensitive data.
+- Guest codes are stored in localStorage for convenience without HTTP-only cookies
+- Add application-level rate limiting for the endpoint `/api/verify-guest` for increased security
+
 
 ## Admin Access
 After setting up your admin token, access the admin panel at `/admin` and use your token to:
 - View all RSVPs
-- Reset guest RSVPs if needed
+- Reset guest or delete test RSVPs
 
 ## Get Started
 
@@ -60,6 +68,7 @@ cd holiday-party-2024
 
 4. Install dependencies
 ```bash
+cd holiday-party-2024
 npm install
 ```
 
